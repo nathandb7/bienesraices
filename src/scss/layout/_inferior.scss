@@ -21,6 +21,11 @@
  .texto-entrada {
     a {
         color: $negro;
+        margin-top: 2rem;
+        display: block;
+        @include tablet { 
+            margin-top: 0;
+         }
     }
     h4 {
         margin: 0;
@@ -32,9 +37,10 @@
             width: 15rem;
             height: .5rem;
             background-color: $verde;
+            margin-top: 1rem;
         }
     }
     span {
-
+        color: $amarillo;
     }
  }
