@@ -1,11 +1,11 @@
 .footer {
     background-color: $grisOscuro;
-    padding: $separacion / 2 0;
+    padding: calc($separacion / 2) 0;
     text-align: center;
     margin-bottom: 0;
     
     .contenido-footer {
-        padding: $separacion / 2;
+        padding: calc($separacion / 2);
     }
     .navegacion {
         visibility: visible;
