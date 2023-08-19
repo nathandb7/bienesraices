@@ -20,14 +20,14 @@
 
     // Ejecutar el código después de que el usuario envia el formulario
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-        $titulo = $_POST['titulo'];
-        $precio = $_POST['precio'];
-        $descripcion = $_POST['descripcion'];
-        $habitaciones = $_POST['habitaciones'];
-        $wc = $_POST['wc'];
-        $estacionamiento = $_POST['estacionamiento'];
-        $vendedorId = $_POST['vendedor'];
+        
+        $titulo = mysqli_real_escape_string( $db, $_POST['titulo'] );
+        $precio = mysqli_real_escape_string( $db, $_POST['precio'] );
+        $descripcion = mysqli_real_escape_string( $db, $_POST['descripcion'] );
+        $habitaciones = mysqli_real_escape_string( $db, $_POST['habitaciones'] );
+        $wc = mysqli_real_escape_string( $db, $_POST['wc'] );
+        $estacionamiento = mysqli_real_escape_string( $db, $_POST['estacionamiento'] );
+        $vendedorId = mysqli_real_escape_string( $db, $_POST['vendedor'] );
         $creado = date('Y/m/d');
 
         if(!$titulo) {
@@ -97,7 +97,7 @@ incluirTemplate('header');
         </div>
     <?php endforeach ?>
 
-    <form class="formulario" method="POST" action="/admin/propiedades/crear.php">
+    <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/from-data">
         <fieldset>
             <legend>Información General</legend>
 
@@ -134,7 +134,7 @@ incluirTemplate('header');
             <select name="vendedor">
                 <option value="">-- Seleccione --</option>
                 <?php while($vendedor = mysqli_fetch_assoc($resultado)) : ?>
-                    <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id']; ?>"><?php echo $vendedor['nombre'] . " " . $vendedor['apellido']; ?></option>
+                    <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id'] ; ?>"><?php echo $vendedor['nombre'] . " " . $vendedor['apellido'] ; ?></option>
                 <?php endwhile; ?>    
             </select>
         </fieldset>
