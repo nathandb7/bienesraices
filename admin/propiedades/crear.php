@@ -3,9 +3,20 @@
     require '../../includes/config/database.php';
     $db = conectarDB();
 
+    // Consultar para obtener vendedores
+    $consulta = "SELECT * FROM vendedores";
+    $resultado = mysqli_query($db, $consulta);
+
     // Arreglo con mensajes de errores
     $errores = [];
 
+    $titulo = '';
+    $precio = '';
+    $descripcion = '';
+    $habitaciones = '';
+    $wc = '';
+    $estacionamiento = '';
+    $vendedorId = '';
 
     // Ejecutar el código después de que el usuario envia el formulario
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,6 +28,7 @@
         $wc = $_POST['wc'];
         $estacionamiento = $_POST['estacionamiento'];
         $vendedorId = $_POST['vendedor'];
+        $creado = date('Y/m/d');
 
         if(!$titulo) {
             $errores[] = "Debes añadir un titulo";
@@ -26,7 +38,7 @@
             $errores[] = "El precio es Obligatorio";
         }
 
-        if( strlen( $descripcion < 50 )) {
+        if (strlen($descripcion) < 50) {
             $errores[] = "La descripción es obligatoria y debe tener al menos 50 caracteres";
         }
         
@@ -50,15 +62,17 @@
         // Revisar que el array de errores no este vacio
         if(empty($errores)) {
             // Insertar en la base de datos
-            $query = " INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, vendedorId) VALUES ( '$titulo',
-            '$precio', '$descripcion', '$habitaciones', '$estacionamiento', '$vendedorId') ";
+            $query = " INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId ) VALUES ( '$titulo',
+            '$precio', '$descripcion', '$habitaciones', '$wc' ,'$estacionamiento', '$creado', '$vendedorId');";
 
             // echo $query;
 
             $resultado = mysqli_query($db, $query);
 
             if ($resultado) {
-                echo "Insertado Correctament";
+                // Redireccionar al usuario
+
+                header('Location: /admin/index.php');
             }
         }
 
@@ -88,29 +102,29 @@ incluirTemplate('header');
             <legend>Información General</legend>
 
             <label for="titulo">Titulo:</label>
-            <input type="text" id="titulo" name="titulo" placeholder="Titulo Propiedad">
+            <input type="text" id="titulo" name="titulo" placeholder="Titulo Propiedad" value="<?php echo $titulo; ?>">
 
             <label for="precio">Precio:</label>
-            <input type="number" id="precio" name="precio" placeholder="Precio Propiedad">
+            <input type="number" id="precio" name="precio" placeholder="Precio Propiedad" value="<?php echo $precio; ?>">
 
             <label for="imagen">Imagen:</label>
             <input type="file" id="imagen" name="imagen" accept="image/jpeg, image/png">
 
             <label for="descripcion">Descripción</label>
-            <textarea id="descripcion" name="descripcion"></textarea>
+            <textarea id="descripcion" name="descripcion"><?php echo $descripcion; ?></textarea>
         </fieldset>
 
         <fieldset>
             <legend>Información Propiedad</legend>
 
             <label for="habitaciones">Habitaciones:</label>
-            <input type="number" id="habitaciones" name="habitaciones" placeholder="Ej: 3" min="1" max="9">
+            <input type="number" id="habitaciones" name="habitaciones" placeholder="Ej: 3" min="1" max="9" value="<?php echo $habitaciones; ?>">
 
             <label for="wc">Baños:</label>
-            <input type="number" id="wc" name="wc" placeholder="Ej: 3" min="1" max="9">
+            <input type="number" id="wc" name="wc" placeholder="Ej: 3" min="1" max="9" value="<?php echo $wc; ?>">
 
             <label for="estacionamiento">Etacionamiento:</label>
-            <input type="number" id="estacionamiento" name="estacionamiento" placeholder="Ej: 3" min="1" max="9">
+            <input type="number" id="estacionamiento" name="estacionamiento" placeholder="Ej: 3" min="1" max="9" value="<?php echo $estacionamiento; ?>">
 
         </fieldset>
 
@@ -119,8 +133,9 @@ incluirTemplate('header');
 
             <select name="vendedor">
                 <option value="">-- Seleccione --</option>
-                <option value="1">Nathan</option>
-                <option value="2">Emanuel</option>
+                <?php while($vendedor = mysqli_fetch_assoc($resultado)) : ?>
+                    <option <?php echo $vendedorId === $vendedor['id'] ? 'selected' : ''; ?> value="<?php echo $vendedor['id']; ?>"><?php echo $vendedor['nombre'] . " " . $vendedor['apellido']; ?></option>
+                <?php endwhile; ?>    
             </select>
         </fieldset>
 
