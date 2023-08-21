@@ -1,4 +1,5 @@
 <?php
+
 // Base de datos
     require '../../includes/config/database.php';
     $db = conectarDB();
@@ -30,6 +31,11 @@
         $vendedorId = mysqli_real_escape_string( $db, $_POST['vendedor'] );
         $creado = date('Y/m/d');
 
+        // Asignar files a una variable
+        $imagen = $_FILES['imagen'];
+        
+        
+
         if(!$titulo) {
             $errores[] = "Debes añadir un titulo";
         }
@@ -58,12 +64,39 @@
             $errores[] = "Elije un vendedor";
         }
 
+        if(!$imagen['name']) {
+            $errores[] = "La Imagen es Obligatoria";
+        }
+
+        // Validar por tamaño (100kb máximo)
+        $media = 1000 * 1000;
+
+        if($imagen['size'] > $media || $imagen['error'] ) {
+            $errores[] = 'La Imagen es muy grande';
+        }
+
 
         // Revisar que el array de errores no este vacio
         if(empty($errores)) {
+            /** Subida de Archivos */
+            
+            // Crear carpeta
+            $carpetaImagenes = '../../imagenes/';
+
+            if(!is_dir($carpetaImagenes)) {
+                mkdir($carpetaImagenes);
+            }
+
+            // Generar un nombre único
+            $nombreImagen = md5( uniqid(rand(), true)) . ".jpg";
+
+            // Subir la imagen
+
+            move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen );
+
             // Insertar en la base de datos
-            $query = " INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId ) VALUES ( '$titulo',
-            '$precio', '$descripcion', '$habitaciones', '$wc' ,'$estacionamiento', '$creado', '$vendedorId');";
+            $query = " INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedorId ) VALUES ( '$titulo',
+            '$precio', '$nombreImagen', '$descripcion', '$habitaciones', '$wc' ,'$estacionamiento', '$creado', '$vendedorId');";
 
             // echo $query;
 
@@ -72,7 +105,7 @@
             if ($resultado) {
                 // Redireccionar al usuario
 
-                header('Location: /admin/index.php');
+                header('Location: /admin?resultado=1');
             }
         }
 
@@ -97,7 +130,7 @@ incluirTemplate('header');
         </div>
     <?php endforeach ?>
 
-    <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/from-data">
+    <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
         <fieldset>
             <legend>Información General</legend>
 

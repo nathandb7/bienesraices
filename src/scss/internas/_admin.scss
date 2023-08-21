@@ -6,6 +6,9 @@
     text-transform: uppercase;
     margin: 1rem 0;
 
+    &.exito {
+        background-color: $verde;
+    }
     &.error {
         background-color: $rojo;
     }
