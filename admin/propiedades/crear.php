@@ -1,45 +1,43 @@
-<?php
-
+<?php 
     require '../../includes/app.php';
-
     use App\Propiedad;
-    use Intervention\Image\ImageManagerStatic as Image;
+    use App\Vendedor;
 
     estaAutenticado();
 
+    // Importar Intervention Image
+    use Intervention\Image\ImageManagerStatic as Image;
+
+    // Crear el objeto
     $propiedad = new Propiedad;
 
-    $db = conectarDB();
-
-    // Consultar para obtener vendedores
-    $consulta = "SELECT * FROM vendedores";
-    $resultado = mysqli_query($db, $consulta);
+    // Consultar para obtener los vendedores
+    $vendedores = Vendedor::all();
 
     // Arreglo con mensajes de errores
     $errores = Propiedad::getErrores();
 
     // Ejecutar el código después de que el usuario envia el formulario
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /** Crea una nueva instancia */
         $propiedad = new Propiedad($_POST['propiedad']);
 
         // Generar un nombre único
-        $nombreImagen = md5( uniqid(rand(), true)) . ".jpg";
+        $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";
 
         // Setear la imagen
-        // Realiza un resize a la imagen con intervetion
+        // Realiza un resize a la imagen con intervention
         if($_FILES['propiedad']['tmp_name']['imagen']) {
-            $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800, 600);
+            $image = Image::make($_FILES['propiedad']['tmp_name']['imagen'])->fit(800,600);
             $propiedad->setImagen($nombreImagen);
         }
         
         // Validar
         $errores = $propiedad->validar();
 
-        // Revisar que el array de errores no este vacio
         if(empty($errores)) {
-
+        
             // Crear la carpeta para subir imagenes
             if(!is_dir(CARPETA_IMAGENES)) {
                 mkdir(CARPETA_IMAGENES);
@@ -48,35 +46,35 @@
             // Guarda la imagen en el servidor
             $image->save(CARPETA_IMAGENES . $nombreImagen);
 
+            // Guarda en la base de datos
             $propiedad->guardar();
         }
+    }
 
-
-}
-
-incluirTemplate('header');
+    incluirTemplate('header');
 ?>
 
-<main class="contenedor seccion">
-    <h1>Crear</h1>
+    <main class="contenedor seccion">
+        <h1>Crear</h1>
 
-    <a href="/admin/index.php" class="boton boton-verde">Volver</a>
+        
 
-    <?php foreach($errores as $error): ?>
+        <a href="/admin" class="boton boton-verde">Volver</a>
+
+        <?php foreach($errores as $error): ?>
         <div class="alerta error">
             <?php echo $error; ?>
         </div>
-    <?php endforeach ?>
+        <?php endforeach; ?>
 
-    <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
+        <form class="formulario" method="POST" action="/admin/propiedades/crear.php" enctype="multipart/form-data">
+            <?php include '../../includes/templates/formulario_propiedades.php'; ?>
 
-    <?php include '../../includes/templates/formulario_propiedades.php'; ?>
+            <input type="submit" value="Crear Propiedad" class="boton boton-verde">
+        </form>
+        
+    </main>
 
-        <input type="submit" value="Crear Propiedad" class="boton-verde">
-    </form>
-
-</main>
-
-<?php
-incluirTemplate('footer');
-?>
+<?php 
+    incluirTemplate('footer');
+?> 

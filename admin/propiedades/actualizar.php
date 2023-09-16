@@ -1,43 +1,40 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
-use App\Propiedad;
-use Intervention\Image\ImageManagerStatic as Image;
 
-require '../../includes/app.php';
+    require '../../includes/app.php';
+    use App\Propiedad;
+    use App\Vendedor;
+
+    // Importar Intervention Image
+    use Intervention\Image\ImageManagerStatic as Image;
 
     estaAutenticado();
 
-    // Validar la url por ID válido
+    // Validar la URL por ID válido
     $id = $_GET['id'];
     $id = filter_var($id, FILTER_VALIDATE_INT);
 
-    if (!$id) {
+    if(!$id) {
         header('Location: /admin');
     }
 
     // Obtener los datos de la propiedad
     $propiedad = Propiedad::find($id);
 
-    // Consultar para obtener vendedores
-    $consulta = "SELECT * FROM vendedores";
-    $resultado = mysqli_query($db, $consulta);
-
+    // Consultar para obtener los vendedores
+    $vendedores = Vendedor::all();
 
     // Arreglo con mensajes de errores
     $errores = Propiedad::getErrores();
 
-
     // Ejecutar el código después de que el usuario envia el formulario
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Asignar los atributos
         $args = $_POST['propiedad'];
-        
+
         $propiedad->sincronizar($args);
 
-        $error = $propiedad->validar();
 
         // Validación
         $errores = $propiedad->validar();
@@ -60,30 +57,28 @@ require '../../includes/app.php';
             $propiedad->guardar();
         }
     }
-
-incluirTemplate('header');
+    incluirTemplate('header');
 ?>
 
-<main class="contenedor seccion">
-    <h1>Actualizar Propiedad</h1>
+    <main class="contenedor seccion">
+        <h1>Actualizar Propiedad</h1>
 
-    <a href="/admin/index.php" class="boton boton-verde">Volver</a>
+        <a href="/admin" class="boton boton-verde">Volver</a>
 
-    <?php foreach($errores as $error): ?>
+        <?php foreach($errores as $error): ?>
         <div class="alerta error">
             <?php echo $error; ?>
         </div>
-    <?php endforeach ?>
+        <?php endforeach; ?>
 
-    <form class="formulario" method="POST" enctype="multipart/form-data">
-       
-        <?php include '../../includes/templates/formulario_propiedades.php' ?>
+        <form class="formulario" method="POST" enctype="multipart/form-data">
+            <?php include '../../includes/templates/formulario_propiedades.php'; ?>
 
-        <input type="submit" value="Actualizar Propiedad" class="boton-verde">
-    </form>
+            <input type="submit" value="Actualizar Propiedad" class="boton boton-verde">
+        </form>
+        
+    </main>
 
-</main>
-
-<?php
-incluirTemplate('footer');
-?>
+<?php 
+    incluirTemplate('footer');
+?> 

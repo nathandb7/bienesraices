@@ -2,10 +2,10 @@
             <legend>Información General</legend>
 
             <label for="titulo">Titulo:</label>
-            <input type="text" id="titulo" name="propiedad[titulo]" placeholder="Titulo Propiedad" value="<?php echo ($propiedad->titulo); ?>">
+            <input type="text" id="titulo" name="propiedad[titulo]" placeholder="Titulo Propiedad" value="<?php echo s($propiedad->titulo); ?>">
 
             <label for="precio">Precio:</label>
-            <input type="number" id="precio" name="propiedad[precio]" placeholder="Precio Propiedad" value="<?php echo ($propiedad->precio); ?>">
+            <input type="number" id="precio" name="propiedad[precio]" placeholder="Precio Propiedad" value="<?php echo s($propiedad->precio); ?>">
 
             <label for="imagen">Imagen:</label>
             <input type="file" id="imagen" name="propiedad[imagen]" accept="image/jpeg, image/png">
@@ -34,5 +34,11 @@
 
         <fieldset>
             <legend>Vendedor Propiedad</legend>
-
+            <label for="vendedor"></label>
+            <select name="propiedad[vendedorId]" id="vendedor">
+                <option value="">--Seleccione--</option>
+                <?php foreach($vendedores as $vendedor) { ?>
+                    <option <?php echo $propiedad->vendedorId === $vendedor->id ? 'selected' : '' ; ?> value="<?php echo s($vendedor->id); ?>"><?php echo s($vendedor->nombre) . " " . s($vendedor->apellido); ?></option>
+                <?php } ?>
+            </select>
         </fieldset>
